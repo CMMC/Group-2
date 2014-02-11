@@ -5,7 +5,7 @@ class Librarian extends CI_Controller{
 		parent::__construct();
 
 		//Redirect if user is not a librarian or a logged in user
-		if(! $this->session->userdata('loggedIn')|| $this->session->userdata('user_type') != 'L'){
+		if(! $this->session->userdata('loggedIn') || $this->session->userdata('user_type') != 'L'){
 			redirect('login');
 		}
 
@@ -32,42 +32,33 @@ class Librarian extends CI_Controller{
 	public function display_search_results($query_id = 0, $offset = 0){
 		$data['title'] = 'Librarian Search Reference - ICS Library System';
 
-		//Store data offset as $page
-		$page = ($this->uri->segment(4)) ? $this->uri->segment(4) : 0;
-
-		//Parse user input(in the form of a query string) from query_string table and store to GET
-		$rows = $this->db->get_where('query_string', array('id' => $query_id))->result();
-		if (isset($rows[0])) {
-			parse_str($rows[0]->query_string, $_GET);		
-		}
-
-		//$this->input->load_query($query_id);
 		$query_array = array(
-			'category' => $this->input->get('category'),
-			'text' => $this->input->get('text'),
-			'sortCategory' => $this->input->get('sortCategory'),
-			'row' => $this->input->get('row'),
-			'accessType' => $this->input->get('accessType'),
-			'orderBy' => $this->input->get('orderBy'),
-			'deletion' => $this->input->get('deletion'),
-			'match' => $this->input->get('match')
+			'category' => $this->input->get('selectCategory'),
+			'text' => $this->input->get('inputText'),
+			'sortCategory' => $this->input->get('selectSortCategory'),
+			'row' => $this->input->get('selectRows'),
+			'accessType' => $this->input->get('selectAccessType'),
+			'orderBy' => $this->input->get('selectOrderBy'),
+			'deletion' => $this->input->get('checkDeletion'),
+			'match' => $this->input->get('radioMatch')
 		);
 
-		$data['query_id'] = $query_id;
+		$offset = $this->input->get('per_page') ? $this->input->get('per_page') : 0;
 
 		$data['total_rows'] = $this->librarian_model->get_number_of_rows($query_array);
 
-		$results = $this->librarian_model->get_search_reference($query_array, $page);
+		$results = $this->librarian_model->get_search_reference($query_array, $offset);
 
 		$data['references'] = $results->result();
 		$data['numResults'] = $results->num_rows();
 
 		/* Initialize the pagination class */
 		$this->load->library('pagination');
-		$config['base_url'] = base_url() . 'index.php/librarian/display_search_results/' . $query_id;
+		$config['base_url'] = base_url() . "index.php/librarian/display_search_results?selectCategory={$_GET['selectCategory']}&inputText={$_GET['inputText']}&radioMatch={$_GET['radioMatch']}&selectSortCategory={$_GET['selectSortCategory']}&selectOrderBy={$_GET['selectOrderBy']}&selectAccessType={$_GET['selectAccessType']}&checkDeletion={$_GET['checkDeletion']}&selectRows={$_GET['selectRows']}";// . $query_id;
 		$config['total_rows'] = $data['total_rows'];
 		$config['per_page'] = $query_array['row']; 
 		$config['uri_segment'] = 4;
+		$config['page_query_string'] = TRUE;
 		$this->pagination->initialize($config);
 
 		//Load the Search View Page
@@ -91,8 +82,8 @@ class Librarian extends CI_Controller{
 
 		$query_id = $this->librarian_model->store_query_string($query_array);
 
-		if($query_array['text'] == '')
-			redirect('librarian');
+		if($query_array['text'] === '')
+			redirect('librarian/search_reference_index');
 
 		else
 			redirect("librarian/display_search_results/$query_id");
