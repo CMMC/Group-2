@@ -2,7 +2,7 @@
 	<?= anchor(base_url() . 'index.php/librarian', 'Back') ?>
 
 		<!-- Form Searching References -->
-		<form action = "<?= base_url() . 'index.php/librarian/search_reference/' ?>" method = 'POST'>
+		<form action = "<?= base_url() . 'index.php/librarian/display_search_results' ?>" method = 'GET'>
 			<select name = 'selectCategory'>
 				<option value = 'title'>Title</option>
 				<option value = 'author'>Author</option>
@@ -11,7 +11,7 @@
 				<option value = 'publisher'>Publisher</option>
 			</select>
 			
-			<input type = 'text' name = 'inputText' pattern = '[a-zA-z0-9]{1,}' />
+			<input type = 'text' name = 'inputText' pattern = '[a-zA-z0-9]{1,}' value = '<?= $this->input->get('inputText') ?>'/>
 			<br />
 			<strong>Advanced Search</strong>
 			<br />
@@ -71,16 +71,14 @@
 
 		<!-- Display table for references already for deletion (complete stock) -->
 
-
-
 		<!-- END -->
 
 		<!-- Display table for references not ready or not scheduled for deletion -->
 		<table id = 'booktable' border = '1'></table>
 		<!-- Form for displaying, deleting, and viewing searched references -->
 		<?php if(isset($references) && $numResults > 0){ ?>
-			<form name="forms" action="<?= base_url().'index.php/librarian/delete_reference/' ?>" method="post">
-				<button type="button" id="markAll" value="markAll1" >Mark All</button>
+			<form name="forms" action="<?= base_url().'index.php/librarian/delete_reference/' ?>" method = "POST">
+				<button type="button" id="markAll" value="markAll">Mark All</button>
 				<input type = "submit" value = "Delete Selected" onclick= "return confirmDelete()" />
 				<br />
 				<center><?= $this->pagination->create_links() ?></center>
@@ -88,6 +86,7 @@
 					<thead>
 						<tr>
 							<th></th>
+							<th>Row</th>
 							<th>Course Code</th>
 							<th>Title</th>
 							<th>Author/s</th>
@@ -101,9 +100,12 @@
 					<tbody style = "text-align: center" >
 
 					<?php
+						$offset = $this->input->get('per_page') ? $this->input->get('per_page') : 0;
+						$rowID = 1 + $offset;
 						foreach($references as $r): ?>
 							<tr>
 								<td><input type = "checkbox" id = "ch" class = "checkbox" name = "ch[]" value = '<?= $r->id ?>'/></td>
+								<td><?= $rowID++ ?></td>
 								<td><?= $r->course_code ?></td>
 								<td><?= anchor(base_url() . 'index.php/librarian/view_reference/' . $r->id, $r->title) ?></td>
 								<td><?= $r->author ?></td>
