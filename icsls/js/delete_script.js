@@ -2,7 +2,7 @@
 function confirmDelete(){
 	var noOfBooksToDelete = $('#booktable').find("input:checkbox:checked").length;
 	if(noOfBooksToDelete > 0){
-		var option= confirm("Are you Sure?");
+		var option = confirm("Are you Sure?");
 		if(option==true){		
 			alert(noOfBooksToDelete+" Book"+((noOfBooksToDelete>1)?'s':'')+" Selected.");
 		}else{
