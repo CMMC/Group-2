@@ -1,10 +1,21 @@
-<?php
 
+<?php
+/**
+ * Controller for librarian-specific modules
+ *
+ * @author Mark Carlo Dela Torre, Angela Roscel Almoro, Jason Faustino, Jay-ar Hernaez
+ * @version 1.0
+*/
 class Librarian extends CI_Controller{
+	/**
+	 * Constructor for the controller Librarian
+	 *
+	 * @access public
+	*/
 	public function Librarian(){
 		parent::__construct();
 
-		//Redirect if user is not a librarian or a logged in user
+		//Redirect if user is not logged in or not a librarian
 		if(! $this->session->userdata('loggedIn') || $this->session->userdata('user_type') != 'L'){
 			redirect('login');
 		}
@@ -14,7 +25,11 @@ class Librarian extends CI_Controller{
 		$this->load->library('table', 'input');
 	}//end of constructor Librarian
 
-	/* Basic Librarian Function */
+	/**
+	 * Default Librarian function - Loads view containing links to Librarian sub-modules
+	 *
+	 * @access public
+	*/
 	public function index(){
 		$data["title"] = "Librarian Search Reference - ICS Library System";
 		
@@ -22,13 +37,22 @@ class Librarian extends CI_Controller{
 	}//end of function index
 
 	/* ******************** SEARCH REFERENCE MODULE ******************** */
-	/* Loads the Search Reference View */
+	/**
+	 * Loads the search reference view containing a form and input fields to search references stored in the database
+	 *
+	 * @access public
+	*/
 	public function search_reference_index(){
 		$data['title'] = "Librarian Search Reference - ICS Library System";
 		$this->load->view('search_view', $data);
 	}//end of function search_reference_index
 
 	/* Displays search result based on the search_result function */
+	/**
+	 * Displays search result based on the user's input
+	 *
+	 * @access public
+	*/
 	public function display_search_results($query_id = 0, $offset = 0){
 		$data['title'] = 'Librarian Search Reference - ICS Library System';
 
@@ -57,95 +81,82 @@ class Librarian extends CI_Controller{
 		$config['base_url'] = base_url() . "index.php/librarian/display_search_results?selectCategory={$_GET['selectCategory']}&inputText={$_GET['inputText']}&radioMatch={$_GET['radioMatch']}&selectSortCategory={$_GET['selectSortCategory']}&selectOrderBy={$_GET['selectOrderBy']}&selectAccessType={$_GET['selectAccessType']}&checkDeletion={$_GET['checkDeletion']}&selectRows={$_GET['selectRows']}";// . $query_id;
 		$config['total_rows'] = $data['total_rows'];
 		$config['per_page'] = $query_array['row']; 
-		$config['uri_segment'] = 4;
 		$config['page_query_string'] = TRUE;
 		$this->pagination->initialize($config);
 
 		//Load the Search View Page
 		$this->load->view('search_view', $data);
 		
-	}
-
-	/* Stores the user input to the database for future retrieval(pagination) */
-	public function search_reference(){
-
-		$query_array = array(
-			'category' => $this->input->post('selectCategory'),
-			'text' => $this->input->post('inputText'),
-			'sortCategory' => $this->input->post('selectSortCategory'),
-			'row' => $this->input->post('selectRows'),
-			'accessType' => $this->input->post('selectAccessType'),
-			'orderBy' => $this->input->post('selectOrderBy'),
-			'deletion' => $this->input->post('checkDeletion'),
-			'match' => $this->input->post('radioMatch')
-		);
-
-		$query_id = $this->librarian_model->store_query_string($query_array);
-
-		if($query_array['text'] === '')
-			redirect('librarian/search_reference_index');
-
-		else
-			redirect("librarian/display_search_results/$query_id");
-
-	}//end of function search_reference
+	}//end of function display_search_results
 
 	/* ******************** END OF SEARCH REFERENCE MODULE ******************** */
 
 	/* ******************** VIEW REFERENCE MODULE ******************** */
-
-	 public function view_reference(){
-	    	/* $id here could be from a $_POST or $_SESSION */
-			$id = $this->uri->segment(3);
+	/**
+	 * View a reference specified by its row ID (which is set in the database)
+	 *
+	 * @access public
+	*/
+	public function view_reference(){
+		$id = $this->uri->segment(3);
 	       	
-	        $data['reference_material'] = $this->librarian_model->get_reference($id);        
-	      	$this->load->view('view_reference_view', $data);
-	    }
+	    $data['reference_material'] = $this->librarian_model->get_reference($id);        
+	    $this->load->view('view_reference_view', $data);
+	}//end of function view_reference
 
 	/* ******************** END OF REFERENCE MODULE ******************** */
 
 	/* ******************** EDIT REFERENCE MODULE ******************** */
 
+	/**
+	 * Loads initial state of the reference to be edited
+	 *
+	 * @access public
+	*/
 	public function edit_reference_index(){
 		$data['title'] = 'Librarian Edit Reference - ICS Library System';
 
 		$data['reference_material'] = $this->librarian_model->get_reference($this->uri->segment(3));
 
 		$this->load->view('edit_reference_view', $data);
-	}
+	}//end of function edit_reference_index
 
+	/**
+	 * Edit reference based on the input of the user
+	 *
+	 * @access public
+	*/
 	public function edit_reference(){
-			//session_start();
-			$id = $this->uri->segment(3);
-			$title = mysql_real_escape_string(trim($this->input->post('title')));
-			$author = $this->input->post('author');
-			$isbn = $this->input->post('isbn');
-			$category = $this->input->post('category');
-			$publisher = mysql_real_escape_string(trim($this->input->post('publisher')));
-			$publication_year = $this->input->post('publication_year');
-			$access_type = $this->input->post('access_type');
-			$course_code = $this->input->post('course_code');
-			$description = mysql_real_escape_string(trim($this->input->post('description')));
-			$total_stock = $this->input->post('total_stock');
+		$id = $this->uri->segment(3);
+		$title = mysql_real_escape_string(trim($this->input->post('title')));
+		$author = $this->input->post('author');
+		$isbn = $this->input->post('isbn');
+		$category = $this->input->post('category');
+		$publisher = mysql_real_escape_string(trim($this->input->post('publisher')));
+		$publication_year = $this->input->post('publication_year');
+		$access_type = $this->input->post('access_type');
+		$course_code = $this->input->post('course_code');
+		$description = mysql_real_escape_string(trim($this->input->post('description')));
+		$total_stock = $this->input->post('total_stock');
 
+		//Store the input from user to be passed on the model
+	    $query_array = array(
+	       	'id' => $id,
+	       	'title' => $title,
+	       	'author' => $author,
+	       	'isbn' => $isbn,
+	       	'category' => $category,
+	       	'publisher' => $publisher,
+	       	'publication_year' => $publication_year,
+	       	'access_type' => $access_type,
+	       	'course_code' => $course_code,
+	       	'description' => $description,
+	       	'total_stock' => $total_stock
+	    );
 
-	       	$query_array = array(
-	       		'id' => $id,
-	       		'title' => $title,
-	       		'author' => $author,
-	       		'isbn' => $isbn,
-	       		'category' => $category,
-	       		'publisher' => $publisher,
-	       		'publication_year' => $publication_year,
-	       		'access_type' => $access_type,
-	       		'course_code' => $course_code,
-	       		'description' => $description,
-	       		'total_stock' => $total_stock
-	       		);
-
-	        $result = $this->librarian_model->edit_reference($query_array);
-	        $this->load->view('success');
-	    }
+	    $result = $this->librarian_model->edit_reference($query_array);
+	    $this->load->view('success');
+	}//end of function edit_reference
 
 	/* ******************** END OF EDIT REFERENCE MODULE ******************** */
 
@@ -213,26 +224,40 @@ class Librarian extends CI_Controller{
 
 	/* ******************** ADD REFERENCE MODULE ******************** */
 
-	/* Loads the Add Reference View */
+	/**
+	 * Loads the view for adding references
+	 *
+	 * @access public
+	*/
 	public function add_reference_index(){
 		$data['title'] = 'Librarian Add Reference - ICS Library System';
 		$this->load->view('add_view', $data);
-	}
+	}//end of function add_reference_index
 
+	/**
+	 * Add a reference to the database
+	 *
+	 * @access public
+	*/
 	public function add_reference(){
 		$data['title'] = 'Librarian Add Reference - ICS Library System';
 		$this->load->view("addReference_view", $data);
 
-		if( $this->input->post('submit') ) {
+		if($this->input->post('submit')) {
 		    $this->librarian_model->add_data();
 		    redirect('librarian/index','refresh');
 		}
-	}
+	}//end of function add_reference
 
+	/**
+	 * Loads and validates the file uploaded by the user
+	 *
+	 * @access public
+	*/
 	public function file_upload(){
 		$data['title'] = 'Librarian Add Reference - ICS Library System';
 
-		if ($this->input->post()){
+		if($this->input->post()){
 			$config_arr = array(
 	            'upload_path' => './uploads/',
 	            'allowed_types' => 'text/plain|text/csv|csv',
@@ -256,35 +281,41 @@ class Librarian extends CI_Controller{
 		else{
 			$this->load->view("fileUpload_view", $data);     
 		}
-	}
+	}//end of function file_upload
 
+	/**
+	 * Adds multiple references to the database using the data in the file
+	 *
+	 * @access public
+	*/
 	public function add_multipleReferences(){
 		$data['title'] = 'Librarian Add Reference - ICS Library System';
 		//$this->load->view("fileUpload_view", $data);
-		if( $this->input->post() ) {
-		    $count=$this->input->post('rowCount');
-		    for($i=0;$i<$count;$i++) {
+		if($this->input->post()){
+		    $count = $this->input->post('rowCount');
+
+		    for($i = 0; $i < $count; $i++) {
 				$data[$i] = array(
-					'TITLE' => $this->input->post('title'.$i),
-					'AUTHOR' => $this->input->post('author'.$i),
-					'ISBN' => $this->input->post('isbn'.$i),
-					'CATEGORY' => $this->input->post('category'.$i),
-					'DESCRIPTION' => $this->input->post('description'.$i),
-					'PUBLISHER' => $this->input->post('publisher'.$i),
-					'PUBLICATION_YEAR' => $this->input->post('year'.$i),
-					'ACCESS_TYPE' => $this->input->post('access_type'.$i),
-					'COURSE_CODE' => $this->input->post('course_code'.$i),
-					'TOTAL_AVAILABLE' => $this->input->post('total_stock'.$i),
-					'TOTAL_STOCK' => $this->input->post('total_stock'.$i),
-					'TIMES_BORROWED' => '0',  
-					'FOR_DELETION' => 'F'       
+					'TITLE' => $this->input->post('title' . $i),
+					'AUTHOR' => $this->input->post('author' . $i),
+					'ISBN' => $this->input->post('isbn' . $i),
+					'CATEGORY' => $this->input->post('category' . $i),
+					'DESCRIPTION' => $this->input->post('description' . $i),
+					'PUBLISHER' => $this->input->post('publisher' . $i),
+					'PUBLICATION_YEAR' => $this->input->post('year' . $i),
+					'ACCESS_TYPE' => $this->input->post('access_type' . $i),
+					'COURSE_CODE' => $this->input->post('course_code' . $i),
+					'TOTAL_AVAILABLE' => $this->input->post('total_stock' . $i),
+					'TOTAL_STOCK' => $this->input->post('total_stock' . $i),
+					'TIMES_BORROWED' => '0',
+					'FOR_DELETION' => 'F'    
 				);
 		    }
 
 	    	$this->librarian_model->add_multipleData($data,$count);
 		    redirect('librarian/index','refresh');
 		}
-	}
+	}//end of function add_multipleReferences
 
 	/* ******************** END OF ADD REFERENCE MODULE ******************** */
 
