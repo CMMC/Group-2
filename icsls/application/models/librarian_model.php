@@ -24,6 +24,8 @@ class Librarian_model extends CI_Model{
 	 * @return int
 	*/
 	public function get_number_of_rows($query_array){
+		$query_array['text'] = $query_array['text'];
+
 		//Match or Like
 		if($query_array['match'] == 'like')
 			$this->db->like($query_array['category'], $query_array['text']);
@@ -146,12 +148,12 @@ class Librarian_model extends CI_Model{
 	*/
 	function add_data(){
         $data = array(
-        	'TITLE' => $this->input->post('title'),
-            'AUTHOR' => $this->input->post('author'),
+        	'TITLE' => htmlspecialchars(mysql_real_escape_string(trim($this->input->post('title')))),
+            'AUTHOR' => htmlspecialchars(mysql_real_escape_string(trim($this->input->post('author')))),
             'ISBN' => $this->input->post('isbn'),
             'CATEGORY' => $this->input->post('category'),
-            'DESCRIPTION' => $this->input->post('description'),
-            'PUBLISHER' => $this->input->post('publisher'),
+            'DESCRIPTION' => htmlspecialchars(mysql_real_escape_string(trim($this->input->post('description')))),
+            'PUBLISHER' => htmlspecialchars(mysql_real_escape_string(trim($this->input->post('publisher')))),
             'PUBLICATION_YEAR' => $this->input->post('year'),
             'ACCESS_TYPE' => $this->input->post('access_type'),
             'COURSE_CODE' => $this->input->post('course_code'),
@@ -240,7 +242,7 @@ class Librarian_model extends CI_Model{
     */
     public function get_reference($referenceId){
         $this->db->where('id', $referenceId);
-        return $this->db->get('reference_material')->result();
+        return $this->db->get('reference_material');
     }//end of function get_reference
 
 }//end of Librarian_model
