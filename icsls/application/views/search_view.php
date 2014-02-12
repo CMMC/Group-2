@@ -11,7 +11,7 @@
 				<option value = 'publisher'>Publisher</option>
 			</select>
 			
-			<input type = 'text' name = 'inputText' pattern = '[a-zA-z0-9]{1,}' value = '<?= $this->input->get('inputText') ?>'/>
+			<input type = 'text' name = 'inputText' pattern = '.{1,}' value = '<?= $this->input->get('inputText') ?>'/>
 			<br />
 			<strong>Advanced Search</strong>
 			<br />
@@ -77,12 +77,12 @@
 		<table id = 'booktable' border = '1'></table>
 		<!-- Form for displaying, deleting, and viewing searched references -->
 		<?php if(isset($references) && $numResults > 0){ ?>
-			<form name="forms" action="<?= base_url().'index.php/librarian/delete_reference/' ?>" method = "POST">
-				<button type="button" id="markAll" value="markAll">Mark All</button>
-				<input type = "submit" value = "Delete Selected" onclick= "return confirmDelete()" />
+			<form name = "forms" action = "<?= base_url() . 'index.php/librarian/delete_reference/' ?>" method = "POST">
+				<button type = "button" id = "markAll" value = "markAll">Mark All</button>
+				<input type = "submit" value = "Delete Selected" onclick = "return confirmDelete()" />
 				<br />
 				<center><?= $this->pagination->create_links() ?></center>
-				<table id='booktable' border = "1" cellpadding = "5" cellspacing = "2">
+				<table id = 'booktable' border = "1" cellpadding = "5" cellspacing = "2">
 					<thead>
 						<tr>
 							<th></th>
@@ -107,8 +107,8 @@
 								<td><input type = "checkbox" id = "ch" class = "checkbox" name = "ch[]" value = '<?= $r->id ?>'/></td>
 								<td><?= $rowID++ ?></td>
 								<td><?= $r->course_code ?></td>
-								<td><?= anchor(base_url() . 'index.php/librarian/view_reference/' . $r->id, $r->title) ?></td>
-								<td><?= $r->author ?></td>
+								<td><?= (anchor(base_url() . 'index.php/librarian/view_reference/' . $r->id, $r->title)) ?></td>
+								<td><?= ($r->author) ?></td>
 								<td>
 									<?php
 										if($r->category == 'B')

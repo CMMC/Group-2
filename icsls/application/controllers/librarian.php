@@ -58,7 +58,7 @@ class Librarian extends CI_Controller{
 
 		$query_array = array(
 			'category' => $this->input->get('selectCategory'),
-			'text' => $this->input->get('inputText'),
+			'text' => htmlspecialchars($this->input->get('inputText')),
 			'sortCategory' => $this->input->get('selectSortCategory'),
 			'row' => $this->input->get('selectRows'),
 			'accessType' => $this->input->get('selectAccessType'),
@@ -66,6 +66,12 @@ class Librarian extends CI_Controller{
 			'deletion' => $this->input->get('checkDeletion'),
 			'match' => $this->input->get('radioMatch')
 		);
+
+		//Do not continue if user tried to make the database retrieval fail by editing URL's GET 
+		foreach($query_array as $element):
+			if($element === FALSE)
+				redirect('librarian/search_reference_index');
+		endforeach;
 
 		$offset = $this->input->get('per_page') ? $this->input->get('per_page') : 0;
 
@@ -99,8 +105,12 @@ class Librarian extends CI_Controller{
 	*/
 	public function view_reference(){
 		$id = $this->uri->segment(3);
-	       	
-	    $data['reference_material'] = $this->librarian_model->get_reference($id);        
+		if($id === FALSE)
+			redirect('librarian');
+	      
+	    $result = $this->librarian_model->get_reference($id);
+	    $data['reference_material'] = $result->result();
+	    $data['number_of_reference'] = $result->num_rows();
 	    $this->load->view('view_reference_view', $data);
 	}//end of function view_reference
 
@@ -116,7 +126,13 @@ class Librarian extends CI_Controller{
 	public function edit_reference_index(){
 		$data['title'] = 'Librarian Edit Reference - ICS Library System';
 
-		$data['reference_material'] = $this->librarian_model->get_reference($this->uri->segment(3));
+		if($this->uri->segment(3) === FALSE)
+			redirect('librarian');
+
+		$queryObj = $this->librarian_model->get_reference($this->uri->segment(3));
+
+		$data['reference_material'] = $queryObj->result();
+		$data['number_of_reference'] = $queryObj->num_rows();
 
 		$this->load->view('edit_reference_view', $data);
 	}//end of function edit_reference_index
@@ -127,16 +143,22 @@ class Librarian extends CI_Controller{
 	 * @access public
 	*/
 	public function edit_reference(){
+		$this->load->helper('text');
+
 		$id = $this->uri->segment(3);
-		$title = mysql_real_escape_string(trim($this->input->post('title')));
-		$author = $this->input->post('author');
+		if($id === FALSE)
+			redirect('librarian');
+
+		//Filter the user's input of HTML special symbols
+		$title = htmlspecialchars(mysql_real_escape_string(trim($this->input->post('title'))));
+		$author = htmlspecialchars(mysql_real_escape_string(trim($this->input->post('author'))));
 		$isbn = $this->input->post('isbn');
 		$category = $this->input->post('category');
-		$publisher = mysql_real_escape_string(trim($this->input->post('publisher')));
+		$publisher = htmlspecialchars(mysql_real_escape_string(trim($this->input->post('publisher'))));
 		$publication_year = $this->input->post('publication_year');
 		$access_type = $this->input->post('access_type');
 		$course_code = $this->input->post('course_code');
-		$description = mysql_real_escape_string(trim($this->input->post('description')));
+		$description = htmlspecialchars(mysql_real_escape_string(trim($this->input->post('description'))));
 		$total_stock = $this->input->post('total_stock');
 
 		//Store the input from user to be passed on the model
@@ -155,7 +177,7 @@ class Librarian extends CI_Controller{
 	    );
 
 	    $result = $this->librarian_model->edit_reference($query_array);
-	    $this->load->view('success');
+	    redirect('librarian');
 	}//end of function edit_reference
 
 	/* ******************** END OF EDIT REFERENCE MODULE ******************** */
