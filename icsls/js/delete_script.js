@@ -1,10 +1,11 @@
 //Confirm to Delete the selected books
 function confirmDelete(){
 	var noOfBooksToDelete = $('#booktable').find("input:checkbox:checked").length;
+	alert(noOfBooksToDelete);
 	if(noOfBooksToDelete > 0){
 		var option = confirm("Are you Sure?");
-		if(option==true){		
-			alert(noOfBooksToDelete+" Book"+((noOfBooksToDelete>1)?'s':'')+" Selected.");
+		if(option == true){		
+			alert(noOfBooksToDelete + " Book" + ((noOfBooksToDelete > 1) ? 's' : '') + " Selected.");
 		}else{
 			return false;
 		}
@@ -12,8 +13,10 @@ function confirmDelete(){
 		alert("No books selected.");
 		return false;
 		}
-	}
+	
+}
 
+/*
 //Confirm To Delete Ready for Deletion Books
 function confirmDeleteReady(){
 	var noOfBooksToDelete = $('#readytodeletetable').find("input:checkbox:checked").length;
@@ -29,7 +32,7 @@ function confirmDeleteReady(){
 		return false;
 		}
 	}
-
+*/
 //Confirm to change the ForDeletion 
 function confirmChangeForDeletion(){
 	var noOfBooksToDelete = $('#booktable').find("input:checkbox:checked").length;
@@ -52,15 +55,17 @@ $('#markAll').click(function (){
 		$('#booktable').find('input[name="ch[]"]').each(function(){
 			$(this).prop('checked', true);
 		});
-		$('#markAll').text('UnMark All');
+		$('#markAll').text('Unmark All');
 	}
-	else if(buttonText === 'UnMark All'){
+	else if(buttonText === 'Unmark All'){
 		$('#booktable').find('input[name="ch[]"]').each(function(){
 			$(this).prop('checked', false);
 		});
 		$('#markAll').text('Mark All');
 	}
 });
+
+
 $('#markAlla').click(function (){
 	var buttonText = $('#markAlla').text();
 	if(buttonText === 'Mark All'){
