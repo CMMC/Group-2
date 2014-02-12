@@ -161,7 +161,7 @@ class Librarian extends CI_Controller{
 	/* ******************** END OF EDIT REFERENCE MODULE ******************** */
 
 	/* ******************** DELETE REFERENCE MODULE ******************** */
-
+	/*
 	public function delete_ready_reference(){
 		if(!empty($_POST['chch'])):
 			if(count($_POST['chch'])>0):
@@ -176,7 +176,13 @@ class Librarian extends CI_Controller{
 		
 		redirect( base_url() . 'index.php/librarian','refresh');
 	}
-	
+	*/
+
+	/**
+	 * Delete selected references specified by its respective checkbox
+	 *
+	 * @access public
+	*/
     public function delete_reference(){
         $data['title'] = 'Delete Reference';
 		
@@ -185,31 +191,36 @@ class Librarian extends CI_Controller{
 			if(count($_POST['ch'])>0):
 				$toDelete = $_POST['ch'];
 				
-				for($i=0;$i< count($toDelete);$i++){
-					$result = $this->librarian_model->delete_references($toDelete[$i]);
-					if($result!=-1) $cannotBeDeleted[] = $result;
+				for($i = 0; $i < count($toDelete); $i++){
+					//$result = $this->librarian_model->delete_references($toDelete[$i]);
+					if($result != -1) $cannotBeDeleted[] = $result;
 				}
 				 
 			endif;
-		}else{}
+		}
 		
 		if(count($cannotBeDeleted)>0){
-			$data['forDeletion'] = $this->librarian_model->get_selected_books($cannotBeDeleted);
+			//$data['forDeletion'] = $this->librarian_model->get_selected_books($cannotBeDeleted);
 			$this->load->view('for_deletion_view',$data);
 		}
-		//redirect( base_url() . 'index.php/librarian','refresh');
-    }
+		redirect(base_url() . 'index.php/librarian','refresh');
+    }//end of function delete_reference
 	
+	/**
+	 * Updates for_deletion attribute of references in case they cannot be deleted immediately
+	 *
+	 * @access public
+	*/
 	public function change_forDeletion(){
 		 $data['title'] = 'Delete Reference';
 		 
 		 if(!empty($_POST['ch'])):
 			$toUpdate = $_POST['ch'];
-			for($i=0;$i< count($toUpdate);$i++){
+			for($i = 0; $i < count($toUpdate); $i++){
 				$this->librarian_model->update_for_deletion($toUpdate[$i]);
 			}
 		 endif;
-		$readyResult= $this->librarian_model->get_ready_for_deletion();
+		$readyResult = $this->librarian_model->get_ready_for_deletion();
 		$data['readyDeletion']	= $readyResult;
 		$idready = array();
 		foreach($readyResult->result() as $row):
@@ -218,7 +229,7 @@ class Librarian extends CI_Controller{
 		
 		$data['query'] = $this->librarian_model->get_other_books($idready);	
 		redirect( base_url() . 'index.php/librarian','refresh');
-	}
+	}//end of function change_forDeletion
 
 	/* ******************** END OF DELETE REFERENCE MODULE ******************** */
 
