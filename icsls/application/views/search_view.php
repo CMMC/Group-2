@@ -72,12 +72,11 @@
 		<!-- Display table for references already for deletion (complete stock) -->
 
 		<!-- END -->
-
+		<form name = "forms" action = "<?= base_url() . 'index.php/librarian/delete_reference/' ?>" method = "POST">
 		<!-- Display table for references not ready or not scheduled for deletion -->
-		<table id = 'booktable' border = '1'></table>
 		<!-- Form for displaying, deleting, and viewing searched references -->
 		<?php if(isset($references) && $numResults > 0){ ?>
-			<form name = "forms" action = "<?= base_url() . 'index.php/librarian/delete_reference/' ?>" method = "POST">
+		
 				<button type = "button" id = "markAll" value = "markAll">Mark All</button>
 				<input type = "submit" value = "Delete Selected" onclick = "return confirmDelete()" />
 				<br />
