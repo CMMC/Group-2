@@ -1,4 +1,3 @@
-
 <?php
 /**
  * Controller for librarian-specific modules
@@ -225,7 +224,7 @@ class Librarian extends CI_Controller{
 			//$data['forDeletion'] = $this->librarian_model->get_selected_books($cannotBeDeleted);
 			$this->load->view('for_deletion_view',$data);
 		}
-		redirect(base_url() . 'index.php/librarian','refresh');
+		else redirect(base_url() . 'index.php/librarian','refresh');
     }//end of function delete_reference
 	
 	/**
