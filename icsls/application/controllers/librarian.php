@@ -213,7 +213,7 @@ class Librarian extends CI_Controller{
 				$toDelete = $_POST['ch'];
 				
 				for($i = 0; $i < count($toDelete); $i++){
-					//$result = $this->librarian_model->delete_references($toDelete[$i]);
+					$result = $this->librarian_model->delete_references($toDelete[$i]);
 					if($result != -1) $cannotBeDeleted[] = $result;
 				}
 				 
@@ -221,7 +221,7 @@ class Librarian extends CI_Controller{
 		}
 		
 		if(count($cannotBeDeleted)>0){
-			//$data['forDeletion'] = $this->librarian_model->get_selected_books($cannotBeDeleted);
+			$data['forDeletion'] = $this->librarian_model->get_selected_books($cannotBeDeleted);
 			$this->load->view('for_deletion_view',$data);
 		}
 		else redirect(base_url() . 'index.php/librarian','refresh');
