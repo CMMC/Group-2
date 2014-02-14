@@ -24,13 +24,23 @@ class Librarian_model extends CI_Model{
 	 * @return int
 	*/
 	public function get_number_of_rows($query_array){
-		$query_array['text'] = $query_array['text'];
+		$categoryArray = array('title', 'author', 'isbn', 'course_code', 'publisher');
+		$sortCategoryArray = array('title', 'author', 'category', 'course_code', 'times_borrowed', 'total_stock');
+		if(! in_array($query_array['category'], $categoryArray))
+			redirect('librarian/search_reference_index');
+		if(! in_array($query_array['sortCategory'], $sortCategoryArray))
+			redirect('librarian/search_reference_index');
+
+		if($query_array['text'] == '')
+			redirect('librarian/search_reference_index');
 
 		//Match or Like
 		if($query_array['match'] == 'like')
 			$this->db->like($query_array['category'], $query_array['text']);
 		elseif($query_array['match'] == 'match')
 			$this->db->where($query_array['category'], $query_array['text']);
+		else
+			redirect('librarian/search_reference_index');
 
 		//Display references ONLY for a specific type of people
 		if($query_array['accessType'] != 'N')
@@ -53,6 +63,17 @@ class Librarian_model extends CI_Model{
 	 * @return object
 	*/
 	public function get_search_reference($query_array, $start){
+		$categoryArray = array('title', 'author', 'isbn', 'course_code', 'publisher');
+		$sortCategoryArray = array('title', 'author', 'category', 'course_code', 'times_borrowed', 'total_stock');
+		if(! in_array($query_array['category'], $categoryArray))
+			redirect('librarian/search_reference_index');
+		if(! in_array($query_array['sortCategory'], $sortCategoryArray))
+			redirect('librarian/search_reference_index');
+		
+		
+		if($query_array['text'] == '')
+			redirect('librarian/search_reference_index');
+
 		//Match or Like
 		if($query_array['match'] == 'like')
 			$this->db->like($query_array['category'], $query_array['text']);
@@ -160,8 +181,10 @@ class Librarian_model extends CI_Model{
             'TOTAL_AVAILABLE' => $this->input->post('total_stock'),
             'TOTAL_STOCK' => $this->input->post('total_stock'),
             'TIMES_BORROWED' => '0',  
-            'FOR_DELETION' => 'F'       
+            'FOR_DELETION' => 'F'
         );
+
+        
           
         $this->db->insert('REFERENCE_MATERIAL', $data);
 
@@ -244,6 +267,39 @@ class Librarian_model extends CI_Model{
         $this->db->where('id', $referenceId);
         return $this->db->get('reference_material');
     }//end of function get_reference
+
+    /**
+	*	Function gets the exact transactions based from type of report (Daily, Weekly or Monthly)
+	*	@param $type (string)
+	*	@return rows from db || null
+	*/
+	public function get_data($type){
+		$day = date('D');
+
+		/*returns rows of data from selected columns of the transaction log based on current date*/
+		if (strcmp($type,'daily') == 0) {//reference_material_id, borrower_id, date_waitlisted, date_reserved, date_borrowed, date_returned
+			return $this->db->query("SELECT * FROM transactions WHERE date_borrowed LIKE CURDATE()");
+		} 
+		/*returns rows of data from selected columns of the transasction log based on the whole week
+		* can only be accessed on Fridays
+		*/
+		else if (strcmp($type,'weekly')==0 && $day=='Fri') {//reference_material_id, borrower_id, date_waitlisted, date_reserved, date_borrowed, date_returned
+			return $this->db->query("Select * from transactions where DATE_SUB(CURDATE(), INTERVAL 4 DAY)<=date_borrowed");	
+		} 
+		/*returns rows of data from selected columns of the transaction log based on the whole month*/
+		else if (strcmp($type,'monthly')==0) {//reference_material_id, borrower_id, date_waitlisted, date_reserved, date_borrowed, date_returned
+			return $this->db->query("Select * from transactions where MONTHNAME(date_borrowed) like MONTHNAME(CURDATE())");
+		}
+	}
+
+
+	/**
+	*	Function gets the most borrowed reference material
+	*	@return rows from db || null
+	*/
+	public function get_popular(){
+		return $this->db->query("select * from reference_material where times_borrowed = (select max(times_borrowed) from reference_material)");
+	}
 
 }//end of Librarian_model
 

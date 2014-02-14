@@ -1,11 +1,10 @@
 //Confirm to Delete the selected books
 function confirmDelete(){
-	var noOfBooksToDelete = $('input[name = "ch[]"]:checked').length;
-	alert(noOfBooksToDelete);
+	var noOfBooksToDelete = $('#booktable').find("input:checkbox:checked").length;
 	if(noOfBooksToDelete > 0){
-		var option = confirm("Are you Sure?");
-		if(option == true){		
-			alert(noOfBooksToDelete + " Book" + ((noOfBooksToDelete > 1) ? 's' : '') + " Selected.");
+		var option= confirm("Are you Sure?");
+		if(option==true){		
+			alert(noOfBooksToDelete+" Book"+((noOfBooksToDelete>1)?'s':'')+" Selected.");
 		}else{
 			return false;
 		}
@@ -13,10 +12,8 @@ function confirmDelete(){
 		alert("No books selected.");
 		return false;
 		}
-	
-}
+	}
 
-/*
 //Confirm To Delete Ready for Deletion Books
 function confirmDeleteReady(){
 	var noOfBooksToDelete = $('#readytodeletetable').find("input:checkbox:checked").length;
@@ -32,14 +29,14 @@ function confirmDeleteReady(){
 		return false;
 		}
 	}
-*/
+
 //Confirm to change the ForDeletion 
 function confirmChangeForDeletion(){
 	var noOfBooksToDelete = $('#booktable').find("input:checkbox:checked").length;
 	if(noOfBooksToDelete > 0){
-		var option = confirm("Are you Sure?");
-		if(option == true){		 
-			alert(noOfBooksToDelete + " Book" + ((noOfBooksToDelete > 1) ? 's' : '') + " Selected.");
+		var option= confirm("Are you Sure?");
+		if(option==true){		 
+			alert(noOfBooksToDelete+" Book"+((noOfBooksToDelete>1)?'s':'')+" Selected.");
 		}else{
 			return false;
 		}
@@ -52,20 +49,18 @@ function confirmChangeForDeletion(){
 $('#markAll').click(function (){
 	var buttonText = $('#markAll').text();
 	if(buttonText === 'Mark All'){
-		$('input[name="ch[]"]').each(function(){
+		$('#booktable').find('input[name="ch[]"]').each(function(){
 			$(this).prop('checked', true);
 		});
-		$('#markAll').text('Unmark All');
+		$('#markAll').text('UnMark All');
 	}
-	else if(buttonText === 'Unmark All'){
-		$('input[name="ch[]"]').each(function(){
+	else if(buttonText === 'UnMark All'){
+		$('#booktable').find('input[name="ch[]"]').each(function(){
 			$(this).prop('checked', false);
 		});
 		$('#markAll').text('Mark All');
 	}
 });
-
-
 $('#markAlla').click(function (){
 	var buttonText = $('#markAlla').text();
 	if(buttonText === 'Mark All'){
@@ -81,4 +76,3 @@ $('#markAlla').click(function (){
 		$('#markAlla').text('Mark All');
 	}
 });
-		

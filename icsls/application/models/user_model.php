@@ -10,7 +10,6 @@ class User_model extends CI_Model{
 	*/
 	public function user_exists($username, $password){
 		$userCount = $this->db->query("SELECT * FROM users WHERE username='$username' AND password='$password'")->num_rows();
-
 		return ($userCount == 1 ? true : false);
 	}
 
