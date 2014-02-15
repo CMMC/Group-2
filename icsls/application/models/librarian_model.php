@@ -94,7 +94,10 @@ class Librarian_model extends CI_Model{
 				return -1;
 			}
 			else{
-				return $book_id;
+				//check if the book is for deletion, if not change the attribute for_deletion  
+				if($row->for_deletion!='T')
+					return $book_id;
+				else return -1;
 			}	
 		endforeach;
 		
