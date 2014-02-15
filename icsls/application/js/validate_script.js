@@ -169,10 +169,3 @@
 				}
 
 		}
-
-		/*
-		 * Instantiates the select tags with the user's input before redirect
-		 *
-		 *
-		*/
-		
